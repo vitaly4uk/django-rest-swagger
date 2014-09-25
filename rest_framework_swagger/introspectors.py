@@ -287,14 +287,14 @@ class ViewSetIntrospector(BaseViewIntrospector):
             yield ViewSetMethodIntrospector(self, methods[method], method)
 
     def _resolve_methods(self):
-        if not hasattr(self.pattern.callback, 'func_code') or \
-                not hasattr(self.pattern.callback, 'func_closure') or \
-                not hasattr(self.pattern.callback.func_code, 'co_freevars') or \
-                'actions' not in self.pattern.callback.func_code.co_freevars:
+        if not hasattr(self.pattern.callback, '__code__') or \
+                not hasattr(self.pattern.callback, '__closure__') or \
+                not hasattr(self.pattern.callback.__code__, 'co_freevars') or \
+                'actions' not in self.pattern.callback.__code__.co_freevars:
             raise RuntimeError('Unable to use callback invalid closure/function specified.')
 
-        idx = self.pattern.callback.func_code.co_freevars.index('actions')
-        return self.pattern.callback.func_closure[idx].cell_contents
+        idx = self.pattern.callback.__code__.co_freevars.index('actions')
+        return self.pattern.callback.__closure__[idx].cell_contents
 
 
 class ViewSetMethodIntrospector(BaseMethodIntrospector):
