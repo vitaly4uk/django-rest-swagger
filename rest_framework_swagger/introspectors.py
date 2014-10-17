@@ -1,6 +1,7 @@
 """Handles the instrospection of REST Framework Views and ViewSets."""
 from abc import ABCMeta, abstractmethod
 import re
+import six
 
 from django.contrib.admindocs.utils import trim_docstring
 
@@ -42,7 +43,6 @@ class IntrospectorHelper(object):
             return None
 
         return serializer.__name__
-
 
     @staticmethod
     def get_view_description(callback):
@@ -242,7 +242,7 @@ class BaseMethodIntrospector(object):
     def build_query_params_from_docstring(self):
         params = []
 
-        docstring = self.retrieve_docstring() if None else ''
+        docstring = self.retrieve_docstring() or ''
         docstring += "\n" + get_view_description(self.callback)
 
         if docstring is None:
@@ -287,14 +287,23 @@ class ViewSetIntrospector(BaseViewIntrospector):
             yield ViewSetMethodIntrospector(self, methods[method], method)
 
     def _resolve_methods(self):
-        if not hasattr(self.pattern.callback, '__code__') or \
-                not hasattr(self.pattern.callback, '__closure__') or \
-                not hasattr(self.pattern.callback.__code__, 'co_freevars') or \
-                'actions' not in self.pattern.callback.__code__.co_freevars:
-            raise RuntimeError('Unable to use callback invalid closure/function specified.')
+        callback = self.pattern.callback
 
-        idx = self.pattern.callback.__code__.co_freevars.index('actions')
-        return self.pattern.callback.__closure__[idx].cell_contents
+        try:
+            closure = six.get_function_closure(callback)
+            code = six.get_function_code(callback)
+
+            while getattr(code, 'co_name') != 'view':
+                # lets unwrap!
+                view = getattr(closure[0], 'cell_contents')
+                closure = six.get_function_closure(view)
+                code = six.get_function_code(view)
+
+            freevars = code.co_freevars
+        except (AttributeError, IndexError):
+            raise RuntimeError('Unable to use callback invalid closure/function specified.')
+        else:
+            return closure[freevars.index('actions')].cell_contents
 
 
 class ViewSetMethodIntrospector(BaseMethodIntrospector):
@@ -312,4 +321,3 @@ class ViewSetMethodIntrospector(BaseMethodIntrospector):
         will be used
         """
         return self.retrieve_docstring()
-
