@@ -13,11 +13,12 @@ DEFAULT_SWAGGER_SETTINGS = {
 
 try:
     from django.conf import settings
+    from django.utils import six
     SWAGGER_SETTINGS = getattr(settings, 'SWAGGER_SETTINGS', DEFAULT_SWAGGER_SETTINGS)
 
-    for key, value in DEFAULT_SWAGGER_SETTINGS.items():
+    for key, value in six.iteritems(DEFAULT_SWAGGER_SETTINGS):
         if key not in SWAGGER_SETTINGS:
             SWAGGER_SETTINGS[key] = value
 
-except:
+except Exception:
     SWAGGER_SETTINGS = DEFAULT_SWAGGER_SETTINGS
