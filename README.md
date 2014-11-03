@@ -1,6 +1,6 @@
 # Django REST Swagger
 
-[![Build Status](https://travis-ci.org/ariovistus/django-rest-swagger.svg?branch=master)](https://travis-ci.org/ariovistus/django-rest-swagger)
+[![Build Status](https://travis-ci.org/marcgibbons/django-rest-swagger.svg?branch=master)](https://travis-ci.org/marcgibbons/django-rest-swagger)
 
 ####An API documentation generator for Swagger UI and Django REST Framework version > 2.3.5
 
@@ -126,6 +126,7 @@ Many thanks to Tom Christie & all the contributors who have developed [Django RE
 * Lukasz Balcerzak (@lukaszb)
 * David Newgas (@davidn)
 * Bozidar Benko (@bbenko)
+* @pySilver
 
 
 ### Django REST Framework Docs contributors:
@@ -136,6 +137,10 @@ Many thanks to Tom Christie & all the contributors who have developed [Django RE
 * Marlon Bailey (@avinash240)
 
 ## Release Notes:
+
+### v0.2.0 (October 31, 2014)
+* Added YAML Parser to docstring handling
+* Fixed Python 3 bugs
 
 ### v0.1.14 (March 7, 2014)
 * Fixed resource name truncation bug
